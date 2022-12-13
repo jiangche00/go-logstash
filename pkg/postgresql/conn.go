@@ -29,33 +29,26 @@ func GetSysInfo() (ret map[string]string) {
 	ret = make(map[string]string)
 	ret["instance"] = "pg-sys"
 
-	var totalMemoryMB string
-	err = db.QueryRow(`select total_memory/1024/1024 as total_memory_MB from pg_sys_memory_info();`).Scan(&totalMemoryMB)
+	var totalMemory string
+	err = db.QueryRow(`select total from memory.f_memory();`).Scan(&totalMemory)
 	if err != nil {
 		log.Fatal(err)
 	}
-	ret["total_memory_mb"] = totalMemoryMB
+	ret["total_memory"] = totalMemory
 
-	var usedMemoryMB string
-	err = db.QueryRow(`select used_memory/1024/1024 as used_memory_MB from pg_sys_memory_info();`).Scan(&usedMemoryMB)
+	var usedMemory string
+	err = db.QueryRow(`select used from memory.f_memory();`).Scan(&usedMemory)
 	if err != nil {
 		log.Fatal(err)
 	}
-	ret["used_memory_mb"] = usedMemoryMB
+	ret["used_memory"] = usedMemory
 
-	var freeMemoryMB string
-	err = db.QueryRow(`select free_memory/1024/1024 as free_memory_MB from pg_sys_memory_info();`).Scan(&freeMemoryMB)
+	var freeMemory string
+	err = db.QueryRow(`select free from memory.f_memory();`).Scan(&freeMemory)
 	if err != nil {
 		log.Fatal(err)
 	}
-	ret["free_memory_mb"] = freeMemoryMB
-
-	var swapMemoryMB string
-	err = db.QueryRow(`select swap_used/1024/1024 as swap_used_MB from pg_sys_memory_info();`).Scan(&swapMemoryMB)
-	if err != nil {
-		log.Fatal(err)
-	}
-	ret["swap_used_mb"] = swapMemoryMB
+	ret["free_memory"] = freeMemory
 
 	var loadAvgOneMinute string
 	err = db.QueryRow(`select load_avg_one_minute from pg_sys_load_avg_info();`).Scan(&loadAvgOneMinute)
